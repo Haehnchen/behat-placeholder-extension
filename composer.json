@@ -16,10 +16,13 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",
-        "behat/mink-extension": "~2.0",
         "symfony/property-access": "~3.0",
         "behat/symfony2-extension": "^2.1",
         "doctrine/common": "~2.0"
+    },
+    "suggest": {
+        "behat/symfony2-extension": "Allows usages for Doctrine context",
+        "doctrine/common": "Needed to support Doctrine context"
     },
     "autoload": {
         "psr-4": {
