@@ -4,8 +4,6 @@ declare(strict_types = 1);
 namespace espend\Behat\PlaceholderExtension\Context;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Hook\Call\AfterScenario;
-use Behat\Behat\Hook\Call\BeforeScenario;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
 use PHPUnit\Framework\Assert as Assertions;
@@ -13,7 +11,7 @@ use PHPUnit\Framework\Assert as Assertions;
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
  */
-class PlaceholderContext implements Context, PlaceholderBagAwareContext
+class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
 {
     /**
      * @var string

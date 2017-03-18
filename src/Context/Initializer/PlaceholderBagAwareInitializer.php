@@ -5,7 +5,7 @@ namespace espend\Behat\PlaceholderExtension\Context\Initializer;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Initializer\ContextInitializer;
-use espend\Behat\PlaceholderExtension\Context\PlaceholderBagAwareContext;
+use espend\Behat\PlaceholderExtension\Context\PlaceholderBagAwareContextInterface;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 
 /**
@@ -31,7 +31,7 @@ class PlaceholderBagAwareInitializer implements ContextInitializer
      */
     public function initializeContext(Context $context)
     {
-        if ($context instanceof PlaceholderBagAwareContext) {
+        if ($context instanceof PlaceholderBagAwareContextInterface) {
             $context->setPlaceholderBag($this->placeholderBag);
         }
     }

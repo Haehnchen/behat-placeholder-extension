@@ -5,7 +5,7 @@ namespace espend\Behat\PlaceholderExtension\Tests\Initializer;
 
 use Behat\Behat\Context\Context;
 use espend\Behat\PlaceholderExtension\Context\Initializer\PlaceholderBagAwareInitializer;
-use espend\Behat\PlaceholderExtension\Context\PlaceholderBagAwareContext;
+use espend\Behat\PlaceholderExtension\Context\PlaceholderBagAwareContextInterface;
 use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ class PlaceholderBagAwareInitializerTest extends TestCase
         $bag = new PlaceholderBag();
 
         $initializer = new PlaceholderBagAwareInitializer($bag);
-        $context = new class implements Context, PlaceholderBagAwareContext
+        $context = new class implements Context, PlaceholderBagAwareContextInterface
         {
             private $placeholder;
 
