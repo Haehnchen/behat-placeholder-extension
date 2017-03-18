@@ -37,3 +37,11 @@ default:
 ```
 Given I set a placeholder "%foobar%" on Doctrine model "MyUser" with "id=13" and "name"
 ```
+
+#### Placeholder Context Injection
+
+`espend\Behat\PlaceholderExtension\Context\PlaceholderBagAwareContext`
+
+```
+class PlaceholderContext implements Context, PlaceholderBagAwareContext {}
+```

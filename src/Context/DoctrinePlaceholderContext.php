@@ -1,10 +1,11 @@
 <?php
+declare(strict_types = 1);
 
 namespace espend\Behat\PlaceholderExtension\Context;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Symfony2Extension\Context\KernelDictionary;
+use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use PHPUnit\Framework\Assert as Assertions;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -12,28 +13,14 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
  */
-class DoctrinePlaceholderContext implements Context
+class DoctrinePlaceholderContext implements Context, PlaceholderBagAwareContext
 {
     use KernelDictionary;
 
     /**
-     * @var PlaceholderContext
+     * @var PlaceholderBagInterface
      */
     private $placeholderBag;
-
-    /**
-     * Pipe main mink context
-     *
-     * @BeforeScenario
-     * @param BeforeScenarioScope $scope
-     */
-    public function before(BeforeScenarioScope $scope)
-    {
-        /** @var \Behat\Behat\Context\Environment\InitializedContextEnvironment $environment */
-        $environment = $scope->getEnvironment();
-
-        $this->placeholderBag = $environment->getContext(PlaceholderContext::class);
-    }
 
     /**
      * @param string $placeholder
@@ -67,6 +54,14 @@ class DoctrinePlaceholderContext implements Context
             return;
         }
 
-        $this->placeholderBag->addPlaceholder($placeholder, (string)$value);
+        $this->placeholderBag->add($placeholder, (string)$value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPlaceholderBag(PlaceholderBagInterface $placeholderBag)
+    {
+        $this->placeholderBag = $placeholderBag;
     }
 }

@@ -30,4 +30,12 @@ class PlaceholderUtilTest extends TestCase
     {
         static::assertEquals($expected, PlaceholderUtil::isValidPlaceholder($placeholder));
     }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testIsValidPlaceholderOrThrowException()
+    {
+        PlaceholderUtil::isValidPlaceholderOrThrowException('foo%');
+    }
 }

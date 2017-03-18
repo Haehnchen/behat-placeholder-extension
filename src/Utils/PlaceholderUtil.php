@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace espend\Behat\PlaceholderExtension\Utils;
 
@@ -18,5 +19,17 @@ final class PlaceholderUtil
             $placeholder[0] == '%' &&
             $placeholder[strlen($placeholder) - 1] === '%'
         ;
+    }
+
+    /**
+     * @param string $placeholder
+     */
+    public static function isValidPlaceholderOrThrowException(string $placeholder)
+    {
+        if (!static::isValidPlaceholder($placeholder)) {
+            throw new \RuntimeException(
+                'Invalid placeholder given; please wrap your place with a percent sign %foobar%'
+            );
+        }
     }
 }

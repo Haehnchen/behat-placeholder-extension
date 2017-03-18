@@ -4,6 +4,8 @@ declare(strict_types = 1);
 namespace espend\Behat\PlaceholderExtension\Context;
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Call\AfterScenario;
+use Behat\Behat\Hook\Call\BeforeScenario;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
 use PHPUnit\Framework\Assert as Assertions;
@@ -11,28 +13,17 @@ use PHPUnit\Framework\Assert as Assertions;
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
  */
-class PlaceholderContext implements Context, PlaceholderBagInterface
+class PlaceholderContext implements Context, PlaceholderBagAwareContext
 {
-    /**
-     * @var array
-     */
-    private $placeholders = [];
-
     /**
      * @var string
      */
     private $randomizedMail = 'behat-%random%@example.com';
 
     /**
-     * Clear all context scenario placeholders
-     *
-     * @BeforeScenario
-     * @AfterScenario
+     * @var PlaceholderBagInterface
      */
-    public function beforeAndAfterScenario()
-    {
-        $this->placeholders = [];
-    }
+    private $placeholderBag;
 
     /**
      * @param string $placeholder
@@ -43,7 +34,7 @@ class PlaceholderContext implements Context, PlaceholderBagInterface
     {
         $this->validatePlaceholder($placeholder);
 
-        $this->placeholders[$placeholder] = $value;
+        $this->placeholderBag->add($placeholder, $value);
     }
 
     /**
@@ -111,7 +102,8 @@ class PlaceholderContext implements Context, PlaceholderBagInterface
      */
     public function printPlaceholderValueOf(string $placeholder)
     {
-        echo sprintf('Placeholder "%s": "%s"', $placeholder, $this->placeholders[$placeholder] ?? 'not set');
+        $placeholders = $this->placeholderBag->all();
+        echo sprintf('Placeholder "%s": "%s"', $placeholder, $placeholders[$placeholder] ?? 'not set');
     }
 
     /**
@@ -119,7 +111,7 @@ class PlaceholderContext implements Context, PlaceholderBagInterface
      */
     public function printAllPlaceholder()
     {
-        foreach (array_keys($this->placeholders) as $key) {
+        foreach (array_keys($this->placeholderBag->all()) as $key) {
             $this->printPlaceholderValueOf($key);
         }
     }
@@ -129,21 +121,7 @@ class PlaceholderContext implements Context, PlaceholderBagInterface
      */
     private function validatePlaceholder(string $placeholder)
     {
-        if (!PlaceholderUtil::isValidPlaceholder($placeholder)) {
-            throw new \RuntimeException(
-                'Invalid placeholder given; please wrap your place with a percent sign %foobar%'
-            );
-        }
-    }
-
-    /**
-     * Get per scenario placeholders
-     *
-     * @return array
-     */
-    public function getPlaceholders(): array
-    {
-        return $this->placeholders;
+        PlaceholderUtil::isValidPlaceholderOrThrowException($placeholder);
     }
 
     /**
@@ -161,10 +139,8 @@ class PlaceholderContext implements Context, PlaceholderBagInterface
     /**
      * {@inheritdoc}
      */
-    public function addPlaceholder(string $placeholder, string $value)
+    public function setPlaceholderBag(PlaceholderBagInterface $placeholderBag)
     {
-        $this->validatePlaceholder($placeholder);
-
-        $this->placeholders[$placeholder] = $value;
+        $this->placeholderBag = $placeholderBag;
     }
 }

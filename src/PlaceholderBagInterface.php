@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace espend\Behat\PlaceholderExtension;
 
@@ -14,5 +15,19 @@ interface PlaceholderBagInterface
      * @param string $value
      * @return void
      */
-    public function addPlaceholder(string $placeholder, string $value);
+    public function add(string $placeholder, string $value);
+
+    /**
+     * Clears all attributes
+     *
+     * @return void
+     */
+    public function clear();
+
+    /**
+     * Get all attributes
+     *
+     * @return array
+     */
+    public function all() : array;
 }
