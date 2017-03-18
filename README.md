@@ -5,6 +5,8 @@
 [![Latest Stable Version](https://poser.pugx.org/espend/behat-placeholder-extension/v/stable.png)](https://packagist.org/packages/espend/behat-placeholder-extension)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/bb3569b9-9c7c-48ce-97ea-91a4adf87c9c/mini.png)](https://insight.sensiolabs.com/projects/bb3569b9-9c7c-48ce-97ea-91a4adf87c9c)
 [![Build Status](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/?branch=master)
 
 ## Installation
 
