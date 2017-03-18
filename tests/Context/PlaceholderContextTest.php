@@ -100,6 +100,36 @@ class PlaceholderContextTest extends TestCase
         $context->iSetAPlaceholderWithValue('%mail', 'foobar');
     }
 
+    public function testPrintPlaceholderValueOf()
+    {
+        $bag = new PlaceholderBag();
+        $bag->add('%mail%', 'foo');
+
+        $context = new PlaceholderContext();
+        $context->setPlaceholderBag($bag);
+
+        ob_start();
+        $context->printPlaceholderValueOf('%mail%');
+        $output = ob_get_clean();
+
+        static::assertContains('Placeholder "%mail%": "foo"', $output);
+    }
+
+    public function testPrintAllPlaceholder()
+    {
+        $bag = new PlaceholderBag();
+        $bag->add('%mail%', 'foo');
+
+        $context = new PlaceholderContext();
+        $context->setPlaceholderBag($bag);
+
+        ob_start();
+        $context->printAllPlaceholder();
+        $output = ob_get_clean();
+
+        static::assertContains('Placeholder "%mail%": "foo"', $output);
+    }
+
     /**
      * @expectedException \RuntimeException
      */
