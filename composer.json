@@ -1,0 +1,38 @@
+{
+    "name": "espend/behat-placeholder-extension",
+    "description": "Behat placeholder extension",
+    "authors": [
+        {
+            "name": "Daniel Espendiller",
+            "email": "daniel@espendiller.net"
+        }
+    ],    
+    "keywords": ["BDD", "Behat", "Symfony", "Context", "Extension"],
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0",
+        "behat/behat": "~3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0",
+        "behat/mink-extension": "~2.0",
+        "symfony/property-access": "~3.0",
+        "behat/symfony2-extension": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "espend\\Behat\\PlaceholderExtension\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "espend\\Behat\\PlaceholderExtension\\Tests": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
