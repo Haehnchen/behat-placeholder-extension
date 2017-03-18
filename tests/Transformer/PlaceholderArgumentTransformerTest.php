@@ -10,6 +10,7 @@ use Behat\Gherkin\Node\StepNode;
 use Behat\Testwork\Call\Callee;
 use Behat\Testwork\Environment\Environment;
 use espend\Behat\PlaceholderExtension\Context\PlaceholderContext;
+use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use espend\Behat\PlaceholderExtension\Transformer\PlaceholderArgumentTransformer;
 use PHPUnit\Framework\TestCase;
 
@@ -27,7 +28,10 @@ class PlaceholderArgumentTransformerTest extends TestCase
     {
         $call = $this->createDefinitionCall();
 
-        $transformer = new PlaceholderArgumentTransformer();
+        $bag = new PlaceholderBag();
+        $bag->add('%foobar%', 'foo');
+
+        $transformer = new PlaceholderArgumentTransformer($bag);
 
         static::assertEquals(
             'foo',
@@ -49,7 +53,10 @@ class PlaceholderArgumentTransformerTest extends TestCase
     {
         $call = $this->createDefinitionCall();
 
-        $transformer = new PlaceholderArgumentTransformer();
+        $bag = new PlaceholderBag();
+        $bag->add('%foobar%', 'foo');
+
+        $transformer = new PlaceholderArgumentTransformer($bag);
 
         static::assertEquals(
             $expected,
@@ -90,35 +97,8 @@ class PlaceholderArgumentTransformerTest extends TestCase
      */
     private function createDefinitionCall(): DefinitionCall
     {
-        $context = $this->createMock(PlaceholderContext::class);
-        $context->method('getPlaceholders')
-            ->willReturn(['%foobar%' => 'foo']);
-
-        $env = new class($context) implements Environment
-        {
-            private $context;
-
-            public function __construct($context)
-            {
-                $this->context = $context;
-            }
-
-            public function getSuite()
-            {
-            }
-
-            public function bindCallee(Callee $callee)
-            {
-            }
-
-            public function getContext()
-            {
-                return $this->context;
-            }
-        };
-
         return new DefinitionCall(
-            $env,
+            $this->createMock(Environment::class),
             $this->createMock(FeatureNode::class),
             $this->createMock(StepNode::class),
             $this->createMock(Definition::class),

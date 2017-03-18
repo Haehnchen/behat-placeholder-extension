@@ -19,6 +19,20 @@ class PlaceholderExtensionTest extends TestCase
         $extension = new PlaceholderExtension();
         $extension->load($container, []);
 
-        static::assertTrue($container->has('espend.behat.placeholder_extension'));
+        static::assertTrue(
+            $container->has('espend.behat.placeholder_extension.placeholder_bag')
+        );
+
+        static::assertTrue(
+            $container->has('espend.behat.placeholder_extension.subscriber.scenario_clear_listener')
+        );
+
+        static::assertTrue(
+            $container->has('espend.behat.placeholder_extension.transformer.placeholder_argument_transformer')
+        );
+
+        static::assertTrue(
+            $container->has('espend.behat.placeholder_extension.context.initializer.placeholder_bag_aware_initializer')
+        );
     }
 }

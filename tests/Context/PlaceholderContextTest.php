@@ -5,6 +5,7 @@ namespace espend\Behat\PlaceholderExtension\Tests\Context;
 
 use DateTime;
 use espend\Behat\PlaceholderExtension\Context\PlaceholderContext;
+use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,76 +15,78 @@ class PlaceholderContextTest extends TestCase
 {
     public function testICreateARandomMailPlaceholder()
     {
+        $bag = new PlaceholderBag();
+
         $context = new PlaceholderContext();
+        $context->setPlaceholderBag($bag);
+
         $context->iCreateARandomMailPlaceholder('%mail%');
 
-        static::assertArrayHasKey('%mail%', $context->getPlaceholders());
-        static::assertRegExp('/^behat-.*@example.com$/', $context->getPlaceholders()['%mail%']);
+        static::assertArrayHasKey('%mail%', $bag->all());
+        static::assertRegExp('/^behat-.*@example.com$/', $bag->all()['%mail%']);
     }
 
     public function testSetRandomizedMailWithValidValue()
     {
+        $bag = new PlaceholderBag();
+
         $context = new PlaceholderContext();
+        $context->setPlaceholderBag($bag);
         $context->setRandomizedMail('behat-%random%@google.com');
         $context->iCreateARandomMailPlaceholder('%mail%');
 
-        static::assertRegExp('/^behat-.*@google.com$/', $context->getPlaceholders()['%mail%']);
+        static::assertRegExp('/^behat-.*@google.com$/', $bag->all()['%mail%']);
     }
 
     public function testISetAPlaceholderWithValue()
     {
+        $bag = new PlaceholderBag();
+
         $context = new PlaceholderContext();
+        $context->setPlaceholderBag($bag);
         $context->iSetAPlaceholderWithValue('%mail%', 'foobar');
 
-        static::assertEquals('foobar', $context->getPlaceholders()['%mail%']);
+        static::assertEquals('foobar', $bag->all()['%mail%']);
     }
 
     public function testICreateARandomPasswordPlaceholder()
     {
+        $bag = new PlaceholderBag();
+
         $context = new PlaceholderContext();
+        $context->setPlaceholderBag($bag);
         $context->iCreateARandomPasswordPlaceholder('%password%');
 
-        static::assertArrayHasKey('%password%', $context->getPlaceholders());
-    }
-
-    public function testThatScenarioMustClearPlaceholders()
-    {
-        $context = new PlaceholderContext();
-        $context->iSetAPlaceholderWithValue('%foobar%', 'foobar');
-        $context->beforeAndAfterScenario();
-
-        static::assertEmpty($context->getPlaceholders());
+        static::assertArrayHasKey('%password%', $bag->all());
     }
 
     public function testISetCurrentDatetimeAsFormatInPlaceholder()
     {
+        $bag = new PlaceholderBag();
+
         $context = new PlaceholderContext();
+        $context->setPlaceholderBag($bag);
         $context->iSetCurrentDatetimeAsFormatInPlaceholder('y-m-d', '%foobar%');
 
         static::assertInstanceOf(
             DateTime::class,
-            DateTime::createFromFormat('y-m-d', $context->getPlaceholders()['%foobar%'])
+            DateTime::createFromFormat('y-m-d', $bag->all()['%foobar%'])
         );
     }
 
     public function testISetARandomTextWithLengthInPlaceholder()
     {
+        $bag = new PlaceholderBag();
+
         $context = new PlaceholderContext();
+        $context->setPlaceholderBag($bag);
+
         $context->iSetARandomTextWithLengthInPlaceholder('50', '%foobar%');
 
         static::assertEquals(
             50,
-            strlen($context->getPlaceholders()['%foobar%'])
+            strlen($bag->all()['%foobar%'])
         );
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testAddPlaceholderPlaceholder()
-    {
-        $context = new PlaceholderContext();
-        $context->addPlaceholder('%mail', 'foobar');
     }
 
     /**
@@ -92,6 +95,8 @@ class PlaceholderContextTest extends TestCase
     public function testISetAPlaceholderWithValueButInvalidPlaceholderPattern()
     {
         $context = new PlaceholderContext();
+        $context->setPlaceholderBag(new PlaceholderBag());
+
         $context->iSetAPlaceholderWithValue('%mail', 'foobar');
     }
 
