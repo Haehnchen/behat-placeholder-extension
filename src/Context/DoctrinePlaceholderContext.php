@@ -13,7 +13,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
  */
-class DoctrinePlaceholderContext implements Context, PlaceholderBagAwareContext
+class DoctrinePlaceholderContext implements Context, PlaceholderBagAwareContextInterface
 {
     use KernelDictionary;
 

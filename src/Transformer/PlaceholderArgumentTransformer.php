@@ -5,7 +5,6 @@ namespace espend\Behat\PlaceholderExtension\Transformer;
 
 use Behat\Behat\Definition\Call\DefinitionCall;
 use Behat\Behat\Transformation\Transformer\ArgumentTransformer;
-use espend\Behat\PlaceholderExtension\Context\PlaceholderContext;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
 

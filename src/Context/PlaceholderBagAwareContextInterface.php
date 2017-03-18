@@ -8,7 +8,7 @@ use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
  */
-interface PlaceholderBagAwareContext
+interface PlaceholderBagAwareContextInterface
 {
     /**
      * Sets place holder bag for context
