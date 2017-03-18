@@ -6,6 +6,7 @@ namespace espend\Behat\PlaceholderExtension\Context;
 use Behat\Behat\Context\Context;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
+use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
 use PHPUnit\Framework\Assert as Assertions;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -25,26 +26,28 @@ class DoctrinePlaceholderContext implements Context, PlaceholderBagAwareContextI
     /**
      * @param string $placeholder
      * @param string $model Entity, Repository or class name
-     * @param string $criteria properties to filter on eg "id=foobar" parse_str supported
+     * @param string $leftOperator filter property
+     * @param string $rightOperator filter property value
      * @param string $property Symfony PropertyAccessor syntax eg "foo.bar" "foo[bar]"
-     * @Given /^I set a placeholder "([^"]*)" on Doctrine model "([^"]*)" with "([^"]*)" and "([^"]*)"$/
+     * @Given /^set placeholder "([^"]*)" of "([^"]*)" on Doctrine model "([^"]*)" with "([^"]*)" equals "([^"]*)"$/
      */
-    public function iSetAPlaceholderOnDoctrineModelWithCriteriaAndProperty(
+    public function setPlaceholderOfPropertyOnDoctrineModelWithCriteriaAndProperty(
         string $placeholder,
+        string $property,
         string $model,
-        string $criteria,
-        string $property
+        string $leftOperator,
+        string $rightOperator
     ) {
+        PlaceholderUtil::isValidPlaceholderOrThrowException($placeholder);
+
         $manager = $this->getContainer()->get('doctrine')->getManagerForClass($model);
         Assertions::assertNotNull($manager, 'No valid Doctrine manager found for ' . $model);
 
-        parse_str($criteria, $find);
-
-        $object = $manager->getRepository($model)->findOneBy($find);
+        $object = $manager->getRepository($model)->findOneBy([$leftOperator => $rightOperator]);
 
         Assertions::assertNotNull(
             $object,
-            sprintf('No valid model found "%s" "%s", "%s"', $model, $criteria, $property)
+            sprintf('No valid model found "%s" "%s", "%s"', $model, $leftOperator . '=' . $rightOperator , $property)
         );
 
         try {

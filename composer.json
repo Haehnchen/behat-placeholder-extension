@@ -18,7 +18,8 @@
         "phpunit/phpunit": "^6.0",
         "behat/mink-extension": "~2.0",
         "symfony/property-access": "~3.0",
-        "behat/symfony2-extension": "^2.1"
+        "behat/symfony2-extension": "^2.1",
+        "doctrine/common": "~2.0"
     },
     "autoload": {
         "psr-4": {

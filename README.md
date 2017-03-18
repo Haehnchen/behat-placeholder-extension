@@ -37,7 +37,8 @@ default:
 #### Doctrine
 
 ```
-Given I set a placeholder "%foobar%" on Doctrine model "MyUser" with "id=13" and "name"
+Given set placeholder "%foobar%" of "id" on Doctrine model "AppBundle:Car" with "name" equals "bmw"
+Given set placeholder "%foobar%" of "id" on Doctrine model "AppBundle\Entity\Car" with "name" equals "bmw"
 ```
 
 #### Placeholder Context Injection
