@@ -28,7 +28,7 @@ final class PlaceholderUtil
     {
         if (!static::isValidPlaceholder($placeholder)) {
             throw new \RuntimeException(
-                'Invalid placeholder given; please wrap your place with a percent sign %foobar%'
+                'Invalid placeholder given; please wrap your placeholder with a percent sign %foobar%'
             );
         }
     }
