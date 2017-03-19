@@ -26,7 +26,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     /**
      * @param string $placeholder
      * @param string $value
-     * @Given /^I set a placeholder "([^"]*)" with value "([^"]*)"$/
+     * @Given /^set a placeholder "([^"]*)" with value "([^"]*)"$/
      */
     public function iSetAPlaceholderWithValue(string $placeholder, string $value)
     {
@@ -37,7 +37,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
 
     /**
      * @param string $placeholder
-     * @Given /^I set a random mail in "([^"]*)" placeholder/
+     * @Given /^set a random mail in "([^"]*)" placeholder/
      */
     public function iCreateARandomMailPlaceholder(string $placeholder)
     {
@@ -49,7 +49,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
 
     /**
      * @param string $placeholder
-     * @Given /^I set a random password in "([^"]*)" placeholder/
+     * @Given /^set a random password in "([^"]*)" placeholder/
      */
     public function iCreateARandomPasswordPlaceholder(string $placeholder)
     {
@@ -66,7 +66,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     /**
      * @param string $format
      * @param string $placeholder
-     * @Given /^I set current date as "([^"]*)" format in "([^"]*)" placeholder/
+     * @Given /^set current date as "([^"]*)" format in "([^"]*)" placeholder/
      */
     public function iSetCurrentDatetimeAsFormatInPlaceholder(string $format, string $placeholder)
     {
@@ -79,7 +79,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     /**
      * @param string $length
      * @param string $placeholder
-     * @Given /^I set a random text with length "(\d+)" in "([^"]*)" placeholder/
+     * @Given /^set a random text with length "(\d+)" in "([^"]*)" placeholder/
      */
     public function iSetARandomTextWithLengthInPlaceholder(string $length, string $placeholder)
     {
