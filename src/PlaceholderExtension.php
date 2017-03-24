@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace espend\Behat\PlaceholderExtension;
 
 use Behat\Behat\Context\ServiceContainer\ContextExtension;
+use Behat\Behat\EventDispatcher\ServiceContainer\EventDispatcherExtension;
 use Behat\Behat\Transformation\ServiceContainer\TransformationExtension;
 use Behat\Testwork\ServiceContainer\Extension;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
@@ -68,6 +69,7 @@ class PlaceholderExtension implements Extension
                 'espend.behat.placeholder_extension.subscriber.scenario_clear_listener',
                 ScenarioClearListener::class
             )
+            ->addTag(EventDispatcherExtension::SUBSCRIBER_TAG)
             ->addArgument(new Reference('espend.behat.placeholder_extension.placeholder_bag'));
 
         $this->loadPlaceholdersTransformer($container);
