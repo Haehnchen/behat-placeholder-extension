@@ -28,6 +28,7 @@ Scenario: Register a new user
     And I fill in "password" with "%password%"
     And I press "Register Now"
     Then I should see "%email%" in the ".account-user" element
+    Then I should see "Hello %email%" in the ".account-user" element
 ```
 
 Also extracting an given value of newly generate user is possible.

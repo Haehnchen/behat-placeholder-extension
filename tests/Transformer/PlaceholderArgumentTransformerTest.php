@@ -7,9 +7,7 @@ use Behat\Behat\Definition\Call\DefinitionCall;
 use Behat\Behat\Definition\Definition;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\StepNode;
-use Behat\Testwork\Call\Callee;
 use Behat\Testwork\Environment\Environment;
-use espend\Behat\PlaceholderExtension\Context\PlaceholderContext;
 use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use espend\Behat\PlaceholderExtension\Transformer\PlaceholderArgumentTransformer;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +22,7 @@ class PlaceholderArgumentTransformerTest extends TestCase
      * @param string $actual
      * @param bool $expected
      */
-    public function testTransformArgument(string $actual, bool $expected)
+    public function testTransformArgument(string $actual, string $expected)
     {
         $call = $this->createDefinitionCall();
 
@@ -34,13 +32,8 @@ class PlaceholderArgumentTransformerTest extends TestCase
         $transformer = new PlaceholderArgumentTransformer($bag);
 
         static::assertEquals(
-            'foo',
-            $transformer->transformArgument($call, 0, '%foobar%')
-        );
-
-        static::assertEquals(
-            'foobar%',
-            $transformer->transformArgument($call, 0, 'foobar%')
+            $expected,
+            $transformer->transformArgument($call, 0, $actual)
         );
     }
 
@@ -71,7 +64,7 @@ class PlaceholderArgumentTransformerTest extends TestCase
     {
         return [
             ['%foobar%', true],
-            ['a%foobar%', false],
+            ['a%foobar%', true],
             ['%foobar', false],
             ['foobar%', false]
         ];
@@ -83,10 +76,10 @@ class PlaceholderArgumentTransformerTest extends TestCase
     public function dataTransformArgument()
     {
         return [
-            ['%foobar%', true],
-            ['a%foobar%', false],
-            ['%foobar', false],
-            ['foobar%', false]
+            ['%foobar%', 'foo'],
+            ['a%foobar%', 'afoo'],
+            ['%foobar', '%foobar'],
+            ['foobar%', 'foobar%']
         ];
     }
 
