@@ -31,13 +31,24 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
      */
     public function supportsDefinitionAndArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
     {
+        if (!is_string($argumentValue)) {
+            return false;
+        }
+
         // '%FOO%', '%foo%'
-        return
-            is_string($argumentValue) &&
-            PlaceholderUtil::isValidPlaceholder($argumentValue) &&
-            ($placeholders = $this->placeholderBag->all()) &&
-            isset($placeholders[$argumentValue])
-        ;
+        if (PlaceholderUtil::isValidPlaceholder($argumentValue)) {
+            return ($placeholders = $this->placeholderBag->all())
+                && isset($placeholders[$argumentValue]);
+        }
+
+        // 'foobar%FOO%'
+        foreach ($this->placeholderBag->all() as $key => $value) {
+            if (false !== strpos($argumentValue, $key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -45,6 +56,12 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
      */
     public function transformArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
     {
+        // 'foobar%FOO%'
+        foreach ($this->placeholderBag->all() as $key => $value) {
+            $argumentValue = str_replace($key, $value, $argumentValue);
+        }
+
+        // '%FOO%', '%foo%'
         $placeholder = $this->placeholderBag->all();
         if (isset($placeholder[$argumentValue])) {
             return $placeholder[$argumentValue];
