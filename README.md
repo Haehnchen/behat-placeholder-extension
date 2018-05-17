@@ -46,7 +46,7 @@ All placeholder are compatible with foreign `Context` arguments.
 ## Installation
 
 ``` bash
-$ php composer.phar require espend/behat-placeholder-extension
+$ composer require espend/behat-placeholder-extension
 ```
 
 ```yaml
