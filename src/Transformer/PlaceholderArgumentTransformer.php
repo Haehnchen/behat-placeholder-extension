@@ -5,6 +5,7 @@ namespace espend\Behat\PlaceholderExtension\Transformer;
 
 use Behat\Behat\Definition\Call\DefinitionCall;
 use Behat\Behat\Transformation\Transformer\ArgumentTransformer;
+use Behat\Gherkin\Node\PyStringNode;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
 
@@ -31,6 +32,10 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
      */
     public function supportsDefinitionAndArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
     {
+        if ($argumentValue instanceof PyStringNode) {
+            $argumentValue = $argumentValue->getRaw();
+        }
+
         if (!is_string($argumentValue)) {
             return false;
         }
@@ -56,6 +61,12 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
      */
     public function transformArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
     {
+        $isPyStringNode = $argumentValue instanceof PyStringNode;
+
+        if ($isPyStringNode) {
+            $argumentValue = $argumentValue->getRaw();
+        }
+
         // 'foobar%FOO%'
         foreach ($this->placeholderBag->all() as $key => $value) {
             $argumentValue = str_replace($key, $value, $argumentValue);
@@ -65,6 +76,10 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
         $placeholder = $this->placeholderBag->all();
         if (isset($placeholder[$argumentValue])) {
             return $placeholder[$argumentValue];
+        }
+
+        if ($isPyStringNode) {
+            return new PyStringNode(explode("\n", $argumentValue), 0);
         }
 
         return $argumentValue;
