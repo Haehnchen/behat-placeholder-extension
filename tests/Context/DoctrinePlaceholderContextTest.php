@@ -11,12 +11,12 @@ use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
+ * @group legacy
  */
-class DoctrinePlaceholderContextTest extends TestCase
+abstract class DoctrinePlaceholderContextTest extends TestCase
 {
     public function testThatInvalidPlaceMustThrowException()
     {
@@ -108,11 +108,8 @@ class DoctrinePlaceholderContextTest extends TestCase
         ContainerInterface $container,
         PlaceholderBag $bag = null
     ): DoctrinePlaceholderContext {
-        $kernel = $this->createMock(KernelInterface::class);
-        $kernel->method('getContainer')->willReturn($container);
-
         $context = new DoctrinePlaceholderContext();
-        $context->setKernel($kernel);
+        $context->setContainer($container);
         $context->setPlaceholderBag($bag ?? new PlaceholderBag());
 
         return $context;
