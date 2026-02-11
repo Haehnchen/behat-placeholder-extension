@@ -5,7 +5,7 @@ namespace espend\Behat\PlaceholderExtension\Context;
 
 use Behat\Behat\Context\Context;
 use Behat\Step\Given;
-use Behat\Symfony2Extension\Context\KernelDictionary;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
 use PHPUnit\Framework\Assert as Assertions;
@@ -17,7 +17,10 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 class DoctrinePlaceholderContext implements Context, PlaceholderBagAwareContextInterface
 {
-    use KernelDictionary;
+    /**
+     * @var ContainerInterface|null
+     */
+    private $container;
 
     /**
      * @var PlaceholderBagInterface
@@ -60,5 +63,28 @@ class DoctrinePlaceholderContext implements Context, PlaceholderBagAwareContextI
     public function setPlaceholderBag(PlaceholderBagInterface $placeholderBag)
     {
         $this->placeholderBag = $placeholderBag;
+    }
+
+    /**
+     * Sets the container.
+     *
+     * @param ContainerInterface $container
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * Gets the container.
+     *
+     * @return ContainerInterface
+     */
+    protected function getContainer(): ContainerInterface
+    {
+        if ($this->container === null) {
+            throw new \RuntimeException('Container not set. Make sure to call setContainer() first.');
+        }
+        return $this->container;
     }
 }
