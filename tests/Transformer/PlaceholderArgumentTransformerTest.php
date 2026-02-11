@@ -10,6 +10,7 @@ use Behat\Gherkin\Node\StepNode;
 use Behat\Testwork\Environment\Environment;
 use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use espend\Behat\PlaceholderExtension\Transformer\PlaceholderArgumentTransformer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -17,12 +18,8 @@ use PHPUnit\Framework\TestCase;
  */
 class PlaceholderArgumentTransformerTest extends TestCase
 {
-    /**
-     * @dataProvider dataTransformArgument
-     * @param string $actual
-     * @param bool $expected
-     */
-    public function testTransformArgument(string $actual, string $expected)
+    #[DataProvider('dataTransformArgument')]
+    public function testTransformArgument(string $actual, string $expected): void
     {
         $call = $this->createDefinitionCall();
 
@@ -37,12 +34,8 @@ class PlaceholderArgumentTransformerTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider dataSupports
-     * @param string $actual
-     * @param bool $expected
-     */
-    public function testSupportsDefinitionAndArgument(string $actual, bool $expected)
+    #[DataProvider('dataSupports')]
+    public function testSupportsDefinitionAndArgument(string $actual, bool $expected): void
     {
         $call = $this->createDefinitionCall();
 
@@ -60,7 +53,7 @@ class PlaceholderArgumentTransformerTest extends TestCase
     /**
      * @return array
      */
-    public function dataSupports()
+    public static function dataSupports(): array
     {
         return [
             ['%foobar%', true],
@@ -73,7 +66,7 @@ class PlaceholderArgumentTransformerTest extends TestCase
     /**
      * @return array
      */
-    public function dataTransformArgument()
+    public static function dataTransformArgument(): array
     {
         return [
             ['%foobar%', 'foo'],

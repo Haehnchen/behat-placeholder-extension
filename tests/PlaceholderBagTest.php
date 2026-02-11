@@ -11,11 +11,9 @@ use PHPUnit\Framework\TestCase;
  */
 class PlaceholderBagTest extends TestCase
 {
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testInvalidPlaceholderMustThrowException()
     {
+        $this->expectException(\RuntimeException::class);
         $bag = new PlaceholderBag();
         $bag->add('foo%', 'foo');
     }

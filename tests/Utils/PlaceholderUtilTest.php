@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace espend\Behat\PlaceholderExtension\Tests\Utils;
 
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -11,7 +12,10 @@ use PHPUnit\Framework\TestCase;
  */
 class PlaceholderUtilTest extends TestCase
 {
-    public function dataPlaceholder()
+    /**
+     * @return array
+     */
+    public static function dataPlaceholder(): array
     {
         return [
             ['%foobar%', true],
@@ -21,21 +25,15 @@ class PlaceholderUtilTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataPlaceholder
-     * @param string $placeholder
-     * @param bool $expected
-     */
-    public function testIsValidPlaceholder(string $placeholder, bool $expected)
+    #[DataProvider('dataPlaceholder')]
+    public function testIsValidPlaceholder(string $placeholder, bool $expected): void
     {
         static::assertEquals($expected, PlaceholderUtil::isValidPlaceholder($placeholder));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testIsValidPlaceholderOrThrowException()
+    public function testIsValidPlaceholderOrThrowException(): void
     {
+        $this->expectException(\RuntimeException::class);
         PlaceholderUtil::isValidPlaceholderOrThrowException('foo%');
     }
 }

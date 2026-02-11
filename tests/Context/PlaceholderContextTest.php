@@ -23,7 +23,7 @@ class PlaceholderContextTest extends TestCase
         $context->iCreateARandomMailPlaceholder('%mail%');
 
         static::assertArrayHasKey('%mail%', $bag->all());
-        static::assertRegExp('/^behat-.*@example.com$/', $bag->all()['%mail%']);
+        static::assertMatchesRegularExpression('/^behat-.*@example.com$/', $bag->all()['%mail%']);
     }
 
     public function testSetRandomizedMailWithValidValue()
@@ -35,7 +35,7 @@ class PlaceholderContextTest extends TestCase
         $context->setRandomizedMail('behat-%random%@google.com');
         $context->iCreateARandomMailPlaceholder('%mail%');
 
-        static::assertRegExp('/^behat-.*@google.com$/', $bag->all()['%mail%']);
+        static::assertMatchesRegularExpression('/^behat-.*@google.com$/', $bag->all()['%mail%']);
     }
 
     public function testISetAPlaceholderWithValue()
@@ -89,11 +89,10 @@ class PlaceholderContextTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testISetAPlaceholderWithValueButInvalidPlaceholderPattern()
     {
+        $this->expectException(\RuntimeException::class);
+
         $context = new PlaceholderContext();
         $context->setPlaceholderBag(new PlaceholderBag());
 
@@ -112,7 +111,7 @@ class PlaceholderContextTest extends TestCase
         $context->printPlaceholderValueOf('%mail%');
         $output = ob_get_clean();
 
-        static::assertContains('Placeholder "%mail%": "foo"', $output);
+        static::assertStringContainsString('Placeholder "%mail%": "foo"', $output);
     }
 
     public function testPrintAllPlaceholder()
@@ -127,14 +126,12 @@ class PlaceholderContextTest extends TestCase
         $context->printAllPlaceholder();
         $output = ob_get_clean();
 
-        static::assertContains('Placeholder "%mail%": "foo"', $output);
+        static::assertStringContainsString('Placeholder "%mail%": "foo"', $output);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testSetRandomizedMailWithInvalidValue()
     {
+        $this->expectException(\RuntimeException::class);
         (new PlaceholderContext())->setRandomizedMail('invalid');
     }
 }
