@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace espend\Behat\PlaceholderExtension\Context;
 
 use Behat\Behat\Context\Context;
+use Behat\Step\Given;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
 use PHPUnit\Framework\Assert as Assertions;
@@ -23,11 +24,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
      */
     private $placeholderBag;
 
-    /**
-     * @param string $placeholder
-     * @param string $value
-     * @Given /^set a placeholder "([^"]*)" with value "([^"]*)"$/
-     */
+    #[Given('/^set a placeholder "([^"]*)" with value "([^"]*)"$/')]
     public function iSetAPlaceholderWithValue(string $placeholder, string $value)
     {
         $this->validatePlaceholder($placeholder);
@@ -35,10 +32,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
         $this->placeholderBag->add($placeholder, $value);
     }
 
-    /**
-     * @param string $placeholder
-     * @Given /^set a random mail in "([^"]*)" placeholder/
-     */
+    #[Given('/^set a random mail in "([^"]*)" placeholder/')]
     public function iCreateARandomMailPlaceholder(string $placeholder)
     {
         $this->iSetAPlaceholderWithValue(
@@ -47,10 +41,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
         );
     }
 
-    /**
-     * @param string $placeholder
-     * @Given /^set a random password in "([^"]*)" placeholder/
-     */
+    #[Given('/^set a random password in "([^"]*)" placeholder/')]
     public function iCreateARandomPasswordPlaceholder(string $placeholder)
     {
         // some special cars
@@ -63,11 +54,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
         );
     }
 
-    /**
-     * @param string $format
-     * @param string $placeholder
-     * @Given /^set current date as "([^"]*)" format in "([^"]*)" placeholder/
-     */
+    #[Given('/^set current date as "([^"]*)" format in "([^"]*)" placeholder/')]
     public function iSetCurrentDatetimeAsFormatInPlaceholder(string $format, string $placeholder)
     {
         $this->iSetAPlaceholderWithValue(
@@ -76,11 +63,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
         );
     }
 
-    /**
-     * @param string $length
-     * @param string $placeholder
-     * @Given /^set a random text with length "(\d+)" in "([^"]*)" placeholder/
-     */
+    #[Given('/^set a random text with length "(\d+)" in "([^"]*)" placeholder/')]
     public function iSetARandomTextWithLengthInPlaceholder(string $length, string $placeholder)
     {
         Assertions::assertTrue(is_numeric($length), 'Invalid length given need integer');
@@ -94,19 +77,14 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
         $this->iSetAPlaceholderWithValue($placeholder, $value);
     }
 
-    /**
-     * @param string $placeholder
-     * @Given /^print placeholder value of "([^"]*)"/
-     */
+    #[Given('/^print placeholder value of "([^"]*)"/')]
     public function printPlaceholderValueOf(string $placeholder)
     {
         $placeholders = $this->placeholderBag->all();
         echo sprintf('Placeholder "%s": "%s"', $placeholder, $placeholders[$placeholder] ?? 'not set');
     }
 
-    /**
-     * @Given /^print all placeholder values/
-     */
+    #[Given('/^print all placeholder values/')]
     public function printAllPlaceholder()
     {
         foreach (array_keys($this->placeholderBag->all()) as $key) {
