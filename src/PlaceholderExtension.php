@@ -23,7 +23,7 @@ class PlaceholderExtension implements Extension
     /**
      * {@inheritdoc}
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
     }
 
