@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace espend\Behat\PlaceholderExtension\Context;
 
 use Behat\Behat\Context\Context;
+use Behat\Step\Given;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
@@ -23,14 +24,7 @@ class DoctrinePlaceholderContext implements Context, PlaceholderBagAwareContextI
      */
     private $placeholderBag;
 
-    /**
-     * @param string $placeholder
-     * @param string $model Entity, Repository or class name
-     * @param string $leftOperator filter property
-     * @param string $rightOperator filter property value
-     * @param string $property Symfony PropertyAccessor syntax eg "foo.bar" "foo[bar]"
-     * @Given /^set placeholder "([^"]*)" of "([^"]*)" on Doctrine model "([^"]*)" with "([^"]*)" equals "([^"]*)"$/
-     */
+    #[Given('/^set placeholder "([^"]*)" of "([^"]*)" on Doctrine model "([^"]*)" with "([^"]*)" equals "([^"]*)"$/')]
     public function setPlaceholderOfPropertyOnDoctrineModelWithCriteriaAndProperty(
         string $placeholder,
         string $property,
