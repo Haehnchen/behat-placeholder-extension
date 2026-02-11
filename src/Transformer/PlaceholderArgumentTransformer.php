@@ -3,9 +3,10 @@ declare(strict_types = 1);
 
 namespace espend\Behat\PlaceholderExtension\Transformer;
 
-use Behat\Behat\Definition\Call\DefinitionCall;
+use Behat\Behat\Transformation\Scope\TransformationScope;
 use Behat\Behat\Transformation\Transformer\ArgumentTransformer;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Step\DocString;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
 
@@ -27,13 +28,16 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
         $this->placeholderBag = $placeholderBag;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function supportsDefinitionAndArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
+    public function supportsDefinitionAndArgument(
+        TransformationScope $scope,
+        int|string $argumentIndex,
+        mixed $argumentValue
+    ): bool
     {
         if ($argumentValue instanceof PyStringNode) {
             $argumentValue = $argumentValue->getRaw();
+        } elseif ($argumentValue instanceof DocString) {
+            $argumentValue = $argumentValue->getContent();
         }
 
         if (!is_string($argumentValue)) {
@@ -56,15 +60,18 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function transformArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
+    public function transformArgument(
+        TransformationScope $scope,
+        int|string $argumentIndex,
+        mixed $argumentValue
+    ): mixed
     {
-        $isPyStringNode = $argumentValue instanceof PyStringNode;
+        $originalArgument = $argumentValue;
 
-        if ($isPyStringNode) {
+        if ($argumentValue instanceof PyStringNode) {
             $argumentValue = $argumentValue->getRaw();
+        } elseif ($argumentValue instanceof DocString) {
+            $argumentValue = $argumentValue->getContent();
         }
 
         // 'foobar%FOO%'
@@ -72,14 +79,17 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
             $argumentValue = str_replace($key, $value, $argumentValue);
         }
 
-        // '%FOO%', '%foo%'
-        $placeholder = $this->placeholderBag->all();
-        if (isset($placeholder[$argumentValue])) {
-            return $placeholder[$argumentValue];
+        if ($originalArgument instanceof PyStringNode) {
+            return new PyStringNode(explode("\n", $argumentValue), $originalArgument->getLine());
         }
 
-        if ($isPyStringNode) {
-            return new PyStringNode(explode("\n", $argumentValue), 0);
+        if ($originalArgument instanceof DocString) {
+            return new DocString(new PyStringNode(explode("\n", $argumentValue), 0));
+        }
+
+        $placeholders = $this->placeholderBag->all();
+        if (isset($placeholders[$argumentValue])) {
+            return $placeholders[$argumentValue];
         }
 
         return $argumentValue;

@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace espend\Behat\PlaceholderExtension\Tests\Transformer;
 
+use Behat\Behat\EventDispatcher\Event\ExampleTested;
 use Behat\Behat\EventDispatcher\Event\ScenarioTested;
 use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use espend\Behat\PlaceholderExtension\Subscriber\ScenarioClearListener;
@@ -28,5 +29,7 @@ class ScenarioClearListenerTest extends TestCase
     {
         static::assertArrayHasKey(ScenarioTested::BEFORE, ScenarioClearListener::getSubscribedEvents());
         static::assertArrayHasKey(ScenarioTested::AFTER, ScenarioClearListener::getSubscribedEvents());
+        static::assertArrayHasKey(ExampleTested::BEFORE, ScenarioClearListener::getSubscribedEvents());
+        static::assertArrayHasKey(ExampleTested::AFTER, ScenarioClearListener::getSubscribedEvents());
     }
 }

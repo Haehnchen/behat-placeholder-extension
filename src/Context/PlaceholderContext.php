@@ -7,7 +7,6 @@ use Behat\Behat\Context\Context;
 use Behat\Step\Given;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use espend\Behat\PlaceholderExtension\Utils\PlaceholderUtil;
-use PHPUnit\Framework\Assert as Assertions;
 
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
@@ -25,7 +24,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     private $placeholderBag;
 
     #[Given('/^set a placeholder "([^"]*)" with value "([^"]*)"$/')]
-    public function iSetAPlaceholderWithValue(string $placeholder, string $value)
+    public function iSetAPlaceholderWithValue(string $placeholder, string $value): void
     {
         $this->validatePlaceholder($placeholder);
 
@@ -33,7 +32,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     }
 
     #[Given('/^set a random mail in "([^"]*)" placeholder/')]
-    public function iCreateARandomMailPlaceholder(string $placeholder)
+    public function iCreateARandomMailPlaceholder(string $placeholder): void
     {
         $this->iSetAPlaceholderWithValue(
             $placeholder,
@@ -42,7 +41,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     }
 
     #[Given('/^set a random password in "([^"]*)" placeholder/')]
-    public function iCreateARandomPasswordPlaceholder(string $placeholder)
+    public function iCreateARandomPasswordPlaceholder(string $placeholder): void
     {
         // some special cars
         $input = ['#', '/', '-', '~', '[', ']'];
@@ -55,7 +54,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     }
 
     #[Given('/^set current date as "([^"]*)" format in "([^"]*)" placeholder/')]
-    public function iSetCurrentDatetimeAsFormatInPlaceholder(string $format, string $placeholder)
+    public function iSetCurrentDatetimeAsFormatInPlaceholder(string $format, string $placeholder): void
     {
         $this->iSetAPlaceholderWithValue(
             $placeholder,
@@ -64,9 +63,11 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     }
 
     #[Given('/^set a random text with length "(\d+)" in "([^"]*)" placeholder/')]
-    public function iSetARandomTextWithLengthInPlaceholder(string $length, string $placeholder)
+    public function iSetARandomTextWithLengthInPlaceholder(string $length, string $placeholder): void
     {
-        Assertions::assertTrue(is_numeric($length), 'Invalid length given need integer');
+        if (!is_numeric($length)) {
+            throw new \InvalidArgumentException('Invalid length given; expected an integer');
+        }
 
         // randomized char whitelist a-z, A-Z, 0-9
         $randomChars = implode('', array_merge(range('a', 'z'), range('A', 'Z'), range(0, 9)));
@@ -78,14 +79,14 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     }
 
     #[Given('/^print placeholder value of "([^"]*)"/')]
-    public function printPlaceholderValueOf(string $placeholder)
+    public function printPlaceholderValueOf(string $placeholder): void
     {
         $placeholders = $this->placeholderBag->all();
         echo sprintf('Placeholder "%s": "%s"', $placeholder, $placeholders[$placeholder] ?? 'not set');
     }
 
     #[Given('/^print all placeholder values/')]
-    public function printAllPlaceholder()
+    public function printAllPlaceholder(): void
     {
         foreach (array_keys($this->placeholderBag->all()) as $key) {
             $this->printPlaceholderValueOf($key);
@@ -95,7 +96,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     /**
      * @param string $placeholder
      */
-    private function validatePlaceholder(string $placeholder)
+    private function validatePlaceholder(string $placeholder): void
     {
         PlaceholderUtil::isValidPlaceholderOrThrowException($placeholder);
     }
@@ -103,7 +104,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     /**
      * @param string $randomizedMail
      */
-    public function setRandomizedMail(string $randomizedMail)
+    public function setRandomizedMail(string $randomizedMail): void
     {
         if (false === strpos($randomizedMail, '%random%')) {
             throw new \RuntimeException('Please provide a %random% placeholder');
@@ -115,7 +116,7 @@ class PlaceholderContext implements Context, PlaceholderBagAwareContextInterface
     /**
      * {@inheritdoc}
      */
-    public function setPlaceholderBag(PlaceholderBagInterface $placeholderBag)
+    public function setPlaceholderBag(PlaceholderBagInterface $placeholderBag): void
     {
         $this->placeholderBag = $placeholderBag;
     }
