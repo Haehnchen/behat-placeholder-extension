@@ -18,20 +18,16 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class DoctrinePlaceholderContextTest extends TestCase
 {
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testThatInvalidPlaceMustThrowException()
     {
+        $this->expectException(\RuntimeException::class);
         $context = new DoctrinePlaceholderContext();
         $context->setPlaceholderOfPropertyOnDoctrineModelWithCriteriaAndProperty('foo%', 'foo', 'foo', 'foo', 'foo');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testInvalidClassForManagerMustThrowException()
     {
+        $this->expectException(\RuntimeException::class);
         $manager = $this->createMock(ManagerRegistry::class);
         $manager->method('getManagerForClass')->willReturn(null);
 
@@ -67,11 +63,9 @@ class DoctrinePlaceholderContextTest extends TestCase
         static::assertEquals('my_name', $bag->all()['%foo%']);
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\AssertionFailedError
-     */
     public function testThatInvalidPropertyAccessValueMustThrowException()
     {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
         $container = $this->createRepositoryContainerWithReturn(new class
         {
             public function getName()
@@ -90,11 +84,9 @@ class DoctrinePlaceholderContextTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \PHPUnit\Framework\AssertionFailedError
-     */
     public function testThatFindOneByReturnsNull()
     {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
         $container = $this->createRepositoryContainerWithReturn(null);
 
         $context = $this->createContextWithContainer($container);
