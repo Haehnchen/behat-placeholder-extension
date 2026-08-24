@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
  */
 class PlaceholderBagAwareInitializerTest extends TestCase
 {
-    public function testThatInitializerAddClass()
+    public function testThatInitializerAddClass(): void
     {
         $bag = new PlaceholderBag();
 
@@ -27,14 +27,14 @@ class PlaceholderBagAwareInitializerTest extends TestCase
             /**
              * @return PlaceholderBagInterface
              */
-            public function getPlaceholder()
+            public function getPlaceholder(): PlaceholderBagInterface
             {
                 return $this->placeholder;
             }
             /**
              * {@inheritdoc}
              */
-            public function setPlaceholderBag(PlaceholderBagInterface $placeholderBag)
+            public function setPlaceholderBag(PlaceholderBagInterface $placeholderBag): void
             {
                 $this->placeholder = $placeholderBag;
             }

@@ -1,16 +1,20 @@
 # Behat Placeholder Extension
 
-[![Build Status](https://travis-ci.org/Haehnchen/behat-placeholder-extension.svg?branch=master)](https://travis-ci.org/Haehnchen/behat-placeholder-extension)
+[![PHPUnit Tests](https://github.com/Haehnchen/behat-placeholder-extension/actions/workflows/phpunit.yml/badge.svg)](https://github.com/Haehnchen/behat-placeholder-extension/actions/workflows/phpunit.yml)
 [![Total Downloads](https://poser.pugx.org/espend/behat-placeholder-extension/downloads.png)](https://packagist.org/packages/espend/behat-placeholder-extension)
 [![Latest Stable Version](https://poser.pugx.org/espend/behat-placeholder-extension/v/stable.png)](https://packagist.org/packages/espend/behat-placeholder-extension)
-[![Build Status](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/build-status/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Haehnchen/behat-placeholder-extension/?branch=master)
+
+## Version Compatibility
+
+| Extension | Behat |
+|-----------|-------|
+| `2.x`     | `3.x` |
+| `3.x`     | `4.x` |
 
 ## Problem to solve
 
 
-If you test your application with external service you run into problems of non unique user input.
+If you test your application with external services, you can run into problems with non-unique user input.
 For example registering a user with same email will fail as there is already a user inside your database with this email address.
 
 ```
@@ -30,7 +34,7 @@ Scenario: Register a new user
     Then I should see "Hello %email%" in the ".account-user" element
 ```
 
-Also extracting an given value of newly generate user is possible.
+Extracting a value from a newly generated user is also possible.
 
 ```
 Scenario: Register a new user and check id
@@ -40,30 +44,41 @@ Scenario: Register a new user and check id
     Then I should see "%user_id%" in the ".account-user-id" element
 ```
 
-All placeholder are compatible with foreign `Context` arguments.
+All placeholders are compatible with arguments from other `Context` classes.
 
 ## Installation
 
-``` bash
-$ composer require espend/behat-placeholder-extension
+```bash
+composer require espend/behat-placeholder-extension
 ```
 
-```yaml
-# behat.yaml
+Version 3 requires PHP 8.2 or newer and supports Behat 4.
 
-default:
-  suites:
-    default:
-      contexts:
-        - espend\Behat\PlaceholderExtension\Context\PlaceholderContext
-  
-  extensions:
-    espend\Behat\PlaceholderExtension\PlaceholderExtension: ~
+```php
+<?php
+// behat.php
+
+use Behat\Config\Config;
+use Behat\Config\Extension;
+use Behat\Config\Profile;
+use Behat\Config\Suite;
+use espend\Behat\PlaceholderExtension\Context\PlaceholderContext;
+use espend\Behat\PlaceholderExtension\PlaceholderExtension;
+
+return (new Config())
+    ->withProfile(
+        (new Profile('default'))
+            ->withSuite(
+                (new Suite('default'))
+                    ->withContexts(PlaceholderContext::class)
+            )
+            ->withExtension(new Extension(PlaceholderExtension::class))
+    );
 ```
 
 ### Feature Steps
 
-All placeholder are valid per Scenario scope. They are cleaned before and after every Scenario.
+All placeholders are valid for one scenario. They are cleaned before and after every scenario.
 
 ```
 Given set a placeholder "%foobar%" with value "my_foobar"
@@ -77,44 +92,78 @@ Given print all placeholder values
 
 #### Doctrine
 
-To interact with the underlying Database there also some Doctrine steps.
-They only work on a Test Suite / Extension using `Behat\Symfony2Extension`
+The optional Doctrine context can read a value from an entity and store it as a placeholder. It uses constructor
+injection and is intended to be registered as a service through the maintained Symfony extension.
+
+```bash
+composer require --dev friends-of-behat/symfony-extension doctrine/persistence symfony/property-access
+```
 
 ```
 Given set placeholder "%foobar%" of "id" on Doctrine model "AppBundle:Car" with "name" equals "bmw"
 Given set placeholder "%foobar%" of "id" on Doctrine model "AppBundle\Entity\Car" with "name" equals "bmw"
 ```
 
+```php
+<?php
+// behat.php
+
+use Behat\Config\Config;
+use Behat\Config\Extension;
+use Behat\Config\Profile;
+use Behat\Config\Suite;
+use espend\Behat\PlaceholderExtension\Context\DoctrinePlaceholderContext;
+use espend\Behat\PlaceholderExtension\PlaceholderExtension;
+use FriendsOfBehat\SymfonyExtension\ServiceContainer\SymfonyExtension;
+
+return (new Config())
+    ->withProfile(
+        (new Profile('default'))
+            ->withSuite(
+                (new Suite('default'))
+                    ->withContexts(DoctrinePlaceholderContext::class)
+            )
+            ->withExtension(new Extension(PlaceholderExtension::class))
+            ->withExtension(new Extension(SymfonyExtension::class))
+    );
+```
+
 ```yaml
-# behat.yaml
-default:
-  suites:
-    default:
-      contexts:
-        - espend\Behat\PlaceholderExtension\Context\DoctrinePlaceholderContext
-
-  extensions:
-    # [...]
-    Behat\Symfony2Extension: ~
-    Behat\MinkExtension:
-      sessions:
-        default:
-          symfony2: ~
-```
-
-```
-# composer.json
-"behat/mink-extension": "*",
-"behat/symfony2-extension": "*",
+# config/services_test.yaml
+services:
+  espend\Behat\PlaceholderExtension\Context\DoctrinePlaceholderContext:
+    autowire: true
+    autoconfigure: true
+    public: true
 ```
 
 #### Placeholder Context Injection
 
-If you want access to placeholders in you custom `Context` you implement the `espend\Behat\PlaceholderExtension\Context\PlaceholderBagAwareContextInterface` Interface
-See `PlaceholderContext` for a full working example
+To access placeholders from a custom context, implement
+`espend\Behat\PlaceholderExtension\Context\PlaceholderBagAwareContextInterface`. Behat 4 no longer discovers PHPDoc
+step annotations, so context steps should use native PHP attributes:
 
-```
-class PlaceholderContext implements Context, PlaceholderBagAwareContext {}
+```php
+use Behat\Behat\Context\Context;
+use Behat\Step\Given;
+use espend\Behat\PlaceholderExtension\Context\PlaceholderBagAwareContextInterface;
+use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
+
+final class FeatureContext implements Context, PlaceholderBagAwareContextInterface
+{
+    private PlaceholderBagInterface $placeholders;
+
+    public function setPlaceholderBag(PlaceholderBagInterface $placeholderBag): void
+    {
+        $this->placeholders = $placeholderBag;
+    }
+
+    #[Given('a custom placeholder step')]
+    public function customPlaceholderStep(): void
+    {
+        $this->placeholders->add('%custom%', 'value');
+    }
+}
 ```
 
 ## TODOs

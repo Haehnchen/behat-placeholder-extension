@@ -3,45 +3,39 @@ declare(strict_types = 1);
 
 namespace espend\Behat\PlaceholderExtension\Tests\Context;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectRepository;
 use espend\Behat\PlaceholderExtension\Context\DoctrinePlaceholderContext;
 use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
  */
 class DoctrinePlaceholderContextTest extends TestCase
 {
-    public function testThatInvalidPlaceMustThrowException()
+    public function testThatInvalidPlaceMustThrowException(): void
     {
         $this->expectException(\RuntimeException::class);
-        $context = new DoctrinePlaceholderContext();
+        $context = $this->createContext($this->createStub(ManagerRegistry::class));
         $context->setPlaceholderOfPropertyOnDoctrineModelWithCriteriaAndProperty('foo%', 'foo', 'foo', 'foo', 'foo');
     }
 
-    public function testInvalidClassForManagerMustThrowException()
+    public function testInvalidClassForManagerMustThrowException(): void
     {
         $this->expectException(\RuntimeException::class);
-        $manager = $this->createMock(ManagerRegistry::class);
+        $manager = $this->createStub(ManagerRegistry::class);
         $manager->method('getManagerForClass')->willReturn(null);
 
-        $container = new Container();
-        $container->set('doctrine', $manager);
-
-        $context = $this->createContextWithContainer($container, new PlaceholderBag());
+        $context = $this->createContext($manager);
 
         $context->setPlaceholderOfPropertyOnDoctrineModelWithCriteriaAndProperty('foo%', 'foo', 'foo', 'foo', 'foo');
     }
 
-    public function testThatPropertyResolvesValue()
+    public function testThatPropertyResolvesValue(): void
     {
-        $container = $this->createRepositoryContainerWithReturn(new class
+        $manager = $this->createManagerRegistryWithReturn(new class
         {
             public function getName()
             {
@@ -51,7 +45,7 @@ class DoctrinePlaceholderContextTest extends TestCase
 
         $bag = new PlaceholderBag();
 
-        $context = $this->createContextWithContainer($container, $bag);
+        $context = $this->createContext($manager, $bag);
         $context->setPlaceholderOfPropertyOnDoctrineModelWithCriteriaAndProperty(
             '%foo%',
             'name',
@@ -63,10 +57,10 @@ class DoctrinePlaceholderContextTest extends TestCase
         static::assertEquals('my_name', $bag->all()['%foo%']);
     }
 
-    public function testThatInvalidPropertyAccessValueMustThrowException()
+    public function testThatInvalidPropertyAccessValueMustThrowException(): void
     {
-        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
-        $container = $this->createRepositoryContainerWithReturn(new class
+        $this->expectException(\RuntimeException::class);
+        $manager = $this->createManagerRegistryWithReturn(new class
         {
             public function getName()
             {
@@ -74,7 +68,7 @@ class DoctrinePlaceholderContextTest extends TestCase
             }
         });
 
-        $context = $this->createContextWithContainer($container);
+        $context = $this->createContext($manager);
         $context->setPlaceholderOfPropertyOnDoctrineModelWithCriteriaAndProperty(
             '%foo%',
             'foobar',
@@ -84,12 +78,12 @@ class DoctrinePlaceholderContextTest extends TestCase
         );
     }
 
-    public function testThatFindOneByReturnsNull()
+    public function testThatFindOneByReturnsNull(): void
     {
-        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
-        $container = $this->createRepositoryContainerWithReturn(null);
+        $this->expectException(\RuntimeException::class);
+        $manager = $this->createManagerRegistryWithReturn(null);
 
-        $context = $this->createContextWithContainer($container);
+        $context = $this->createContext($manager);
         $context->setPlaceholderOfPropertyOnDoctrineModelWithCriteriaAndProperty(
             '%foo%',
             'foobar',
@@ -100,46 +94,34 @@ class DoctrinePlaceholderContextTest extends TestCase
     }
 
     /**
-     * @param ContainerInterface $container
-     * @param PlaceholderBag $bag
-     * @return DoctrinePlaceholderContext
+     * @param ManagerRegistry $managerRegistry
      */
-    private function createContextWithContainer(
-        ContainerInterface $container,
-        PlaceholderBag $bag = null
+    private function createContext(
+        ManagerRegistry $managerRegistry,
+        ?PlaceholderBag $bag = null
     ): DoctrinePlaceholderContext {
-        $kernel = $this->createMock(KernelInterface::class);
-        $kernel->method('getContainer')->willReturn($container);
-
-        $context = new DoctrinePlaceholderContext();
-        $context->setKernel($kernel);
+        $context = new DoctrinePlaceholderContext($managerRegistry);
         $context->setPlaceholderBag($bag ?? new PlaceholderBag());
 
         return $context;
     }
 
-    /**
-     * @param mixed $return
-     * @return Container
-     */
-    private function createRepositoryContainerWithReturn($return): Container
+    private function createManagerRegistryWithReturn(mixed $return): ManagerRegistry
     {
         $repository = $this->createMock(ObjectRepository::class);
 
         $repository
+            ->expects(static::once())
             ->method('findOneBy')
             ->with(['name' => 'foobar'])
             ->willReturn($return);
 
-        $objectManager = $this->createMock(ObjectManager::class);
+        $objectManager = $this->createStub(ObjectManager::class);
         $objectManager->method('getRepository')->willReturn($repository);
 
-        $manager = $this->createMock(ManagerRegistry::class);
+        $manager = $this->createStub(ManagerRegistry::class);
         $manager->method('getManagerForClass')->willReturn($objectManager);
 
-        $container = new Container();
-        $container->set('doctrine', $manager);
-
-        return $container;
+        return $manager;
     }
 }
