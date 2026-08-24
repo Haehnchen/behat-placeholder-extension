@@ -5,24 +5,56 @@ on:
     branches: [ master, feature/* ]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    name: PHP 8.4
+    name: PHP ${{ matrix.php }} / Behat ${{ matrix.behat }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            behat: '^3.32'
+          - php: '8.5'
+            behat: '^3.32'
+          - php: '8.2'
+            behat: '^4.0@alpha'
+          - php: '8.5'
+            behat: '^4.0@alpha'
+          - php: '8.5'
+            behat: '4.x-dev'
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ matrix.php }}
           coverage: none
 
+      - name: Validate Composer metadata
+        run: composer validate --strict
+
+      - name: Select Behat version
+        env:
+          BEHAT_VERSION: ${{ matrix.behat }}
+        run: composer require --no-interaction --no-update "behat/behat:${BEHAT_VERSION}"
+
       - name: Install dependencies
-        run: composer install --no-progress --no-interaction
+        run: composer update --prefer-dist --no-progress --no-interaction
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit
+
+      - name: Verify Behat extension loading
+        run: vendor/bin/behat --dry-run --no-interaction --format=progress
+
+      - name: Run Behat integration tests
+        run: vendor/bin/behat --no-interaction --format=progress

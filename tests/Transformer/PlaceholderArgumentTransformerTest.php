@@ -84,10 +84,10 @@ class PlaceholderArgumentTransformerTest extends TestCase
     private function createDefinitionCall(): DefinitionCall
     {
         return new DefinitionCall(
-            $this->createMock(Environment::class),
-            $this->createMock(FeatureNode::class),
-            $this->createMock(StepNode::class),
-            $this->createMock(Definition::class),
+            $this->createStub(Environment::class),
+            $this->createStub(FeatureNode::class),
+            $this->createStub(StepNode::class),
+            $this->createStub(Definition::class),
             []
         );
     }

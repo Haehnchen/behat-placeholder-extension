@@ -28,9 +28,16 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
     }
 
     /**
-     * {@inheritdoc}
+     * The native mixed type keeps this implementation contravariant with Behat 4
+     * while remaining compatible with Behat 3's untyped parameter.
+     *
+     * @param int|string $argumentIndex
      */
-    public function supportsDefinitionAndArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
+    public function supportsDefinitionAndArgument(
+        DefinitionCall $definitionCall,
+        mixed $argumentIndex,
+        mixed $argumentValue
+    ): bool
     {
         if ($argumentValue instanceof PyStringNode) {
             $argumentValue = $argumentValue->getRaw();
@@ -57,9 +64,16 @@ class PlaceholderArgumentTransformer implements ArgumentTransformer
     }
 
     /**
-     * {@inheritdoc}
+     * The native mixed type keeps this implementation contravariant with Behat 4
+     * while remaining compatible with Behat 3's untyped parameter.
+     *
+     * @param int|string $argumentIndex
      */
-    public function transformArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
+    public function transformArgument(
+        DefinitionCall $definitionCall,
+        mixed $argumentIndex,
+        mixed $argumentValue
+    ): mixed
     {
         $isPyStringNode = $argumentValue instanceof PyStringNode;
 

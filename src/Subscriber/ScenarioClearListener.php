@@ -28,7 +28,7 @@ class ScenarioClearListener implements EventSubscriberInterface
     /**
      * Placeholder are only valid per scenario scope.
      */
-    public function onBeforeAfterScenario()
+    public function onBeforeAfterScenario(): void
     {
         $this->parameterBag->clear();
     }
