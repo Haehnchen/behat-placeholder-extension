@@ -29,7 +29,7 @@ class PlaceholderBagAwareInitializer implements ContextInitializer
     /**
      * {@inheritdoc}
      */
-    public function initializeContext(Context $context)
+    public function initializeContext(Context $context): void
     {
         if ($context instanceof PlaceholderBagAwareContextInterface) {
             $context->setPlaceholderBag($this->placeholderBag);

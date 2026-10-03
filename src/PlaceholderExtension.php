@@ -23,14 +23,14 @@ class PlaceholderExtension implements Extension
     /**
      * {@inheritdoc}
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getConfigKey()
+    public function getConfigKey(): string
     {
         return 'placeholder';
     }
@@ -38,14 +38,14 @@ class PlaceholderExtension implements Extension
     /**
      * {@inheritdoc}
      */
-    public function initialize(ExtensionManager $extensionManager)
+    public function initialize(ExtensionManager $extensionManager): void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function configure(ArrayNodeDefinition $builder)
+    public function configure(ArrayNodeDefinition $builder): void
     {
         $builder
             ->addDefaultsIfNotSet()
@@ -60,7 +60,7 @@ class PlaceholderExtension implements Extension
     /**
      * {@inheritdoc}
      */
-    public function load(ContainerBuilder $container, array $config)
+    public function load(ContainerBuilder $container, array $config): void
     {
         $container->register('espend.behat.placeholder_extension.placeholder_bag', PlaceholderBag::class);
 
@@ -81,7 +81,7 @@ class PlaceholderExtension implements Extension
      *
      * @param ContainerBuilder $container
      */
-    private function loadPlaceholdersTransformer(ContainerBuilder $container)
+    private function loadPlaceholdersTransformer(ContainerBuilder $container): void
     {
         $container
             ->register(
@@ -95,7 +95,7 @@ class PlaceholderExtension implements Extension
     /**
      * @param ContainerBuilder $container
      */
-    private function loadContextInitializer(ContainerBuilder $container)
+    private function loadContextInitializer(ContainerBuilder $container): void
     {
         $container
             ->register(

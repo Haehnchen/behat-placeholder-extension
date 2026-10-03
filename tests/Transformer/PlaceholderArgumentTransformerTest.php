@@ -3,11 +3,10 @@ declare(strict_types = 1);
 
 namespace espend\Behat\PlaceholderExtension\Tests\Transformer;
 
-use Behat\Behat\Definition\Call\DefinitionCall;
-use Behat\Behat\Definition\Definition;
-use Behat\Gherkin\Node\FeatureNode;
-use Behat\Gherkin\Node\StepNode;
-use Behat\Testwork\Environment\Environment;
+use Behat\Behat\Transformation\Scope\TransformationScope;
+use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
+use Behat\Step\DocString;
 use espend\Behat\PlaceholderExtension\PlaceholderBag;
 use espend\Behat\PlaceholderExtension\Transformer\PlaceholderArgumentTransformer;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -21,7 +20,7 @@ class PlaceholderArgumentTransformerTest extends TestCase
     #[DataProvider('dataTransformArgument')]
     public function testTransformArgument(string $actual, string $expected): void
     {
-        $call = $this->createDefinitionCall();
+        $scope = $this->createTransformationScope();
 
         $bag = new PlaceholderBag();
         $bag->add('%foobar%', 'foo');
@@ -30,14 +29,14 @@ class PlaceholderArgumentTransformerTest extends TestCase
 
         static::assertEquals(
             $expected,
-            $transformer->transformArgument($call, 0, $actual)
+            $transformer->transformArgument($scope, 0, $actual)
         );
     }
 
     #[DataProvider('dataSupports')]
     public function testSupportsDefinitionAndArgument(string $actual, bool $expected): void
     {
-        $call = $this->createDefinitionCall();
+        $scope = $this->createTransformationScope();
 
         $bag = new PlaceholderBag();
         $bag->add('%foobar%', 'foo');
@@ -46,7 +45,7 @@ class PlaceholderArgumentTransformerTest extends TestCase
 
         static::assertEquals(
             $expected,
-            $transformer->supportsDefinitionAndArgument($call, 0, $actual)
+            $transformer->supportsDefinitionAndArgument($scope, 0, $actual)
         );
     }
 
@@ -76,19 +75,62 @@ class PlaceholderArgumentTransformerTest extends TestCase
         ];
     }
 
-    /**
-     * Workarounds for "final" in implementation of Behat
-     *
-     * @return DefinitionCall
-     */
-    private function createDefinitionCall(): DefinitionCall
+    public function testTransformPyStringPreservesTypeAndLine(): void
     {
-        return new DefinitionCall(
-            $this->createMock(Environment::class),
-            $this->createMock(FeatureNode::class),
-            $this->createMock(StepNode::class),
-            $this->createMock(Definition::class),
-            []
-        );
+        $bag = new PlaceholderBag();
+        $bag->add('%foobar%', 'foo');
+        $transformer = new PlaceholderArgumentTransformer($bag);
+        $scope = $this->createTransformationScope();
+        $argument = new PyStringNode(['Hello %foobar%', '%foobar%'], 42);
+
+        static::assertTrue($transformer->supportsDefinitionAndArgument($scope, 0, $argument));
+        $result = $transformer->transformArgument($scope, 0, $argument);
+
+        static::assertInstanceOf(PyStringNode::class, $result);
+        static::assertSame("Hello foo\nfoo", $result->getRaw());
+        static::assertSame(42, $result->getLine());
+    }
+
+    public function testTransformDocStringPreservesType(): void
+    {
+        $bag = new PlaceholderBag();
+        $bag->add('%foobar%', 'foo');
+        $transformer = new PlaceholderArgumentTransformer($bag);
+        $scope = $this->createTransformationScope();
+        $argument = new DocString(new PyStringNode(['Hello %foobar%', '%foobar%'], 42));
+
+        static::assertTrue($transformer->supportsDefinitionAndArgument($scope, 'text', $argument));
+        $result = $transformer->transformArgument($scope, 'text', $argument);
+
+        static::assertInstanceOf(DocString::class, $result);
+        static::assertSame("Hello foo\nfoo", $result->getContent());
+    }
+
+    #[DataProvider('dataUnsupportedArguments')]
+    public function testUnsupportedArguments(mixed $argument): void
+    {
+        $bag = new PlaceholderBag();
+        $bag->add('%foobar%', 'foo');
+        $transformer = new PlaceholderArgumentTransformer($bag);
+
+        static::assertFalse($transformer->supportsDefinitionAndArgument($this->createTransformationScope(), 0, $argument));
+    }
+
+    public static function dataUnsupportedArguments(): array
+    {
+        return [
+            [null],
+            [123],
+            [false],
+            [['%foobar%']],
+            [new TableNode([['%foobar%']])],
+            [new PyStringNode(['%unknown%'], 1)],
+            [new DocString(new PyStringNode(['%unknown%'], 1))],
+        ];
+    }
+
+    private function createTransformationScope(): TransformationScope
+    {
+        return $this->createStub(TransformationScope::class);
     }
 }

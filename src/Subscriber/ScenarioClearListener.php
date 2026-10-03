@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace espend\Behat\PlaceholderExtension\Subscriber;
 
+use Behat\Behat\EventDispatcher\Event\ExampleTested;
 use Behat\Behat\EventDispatcher\Event\ScenarioTested;
 use espend\Behat\PlaceholderExtension\PlaceholderBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -28,7 +29,7 @@ class ScenarioClearListener implements EventSubscriberInterface
     /**
      * Placeholder are only valid per scenario scope.
      */
-    public function onBeforeAfterScenario()
+    public function onBeforeAfterScenario(): void
     {
         $this->parameterBag->clear();
     }
@@ -36,11 +37,13 @@ class ScenarioClearListener implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return array(
             ScenarioTested::BEFORE => 'onBeforeAfterScenario',
-            ScenarioTested::AFTER => 'onBeforeAfterScenario'
+            ScenarioTested::AFTER => 'onBeforeAfterScenario',
+            ExampleTested::BEFORE => 'onBeforeAfterScenario',
+            ExampleTested::AFTER => 'onBeforeAfterScenario'
         );
     }
 }
